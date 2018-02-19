@@ -56,6 +56,7 @@ class autoptimizeMain
         add_action( 'autoptimize_setup_done', array( $this, 'check_cache_and_run' ) );
         add_action( 'autoptimize_setup_done', array( $this, 'maybe_run_ao_extra' ) );
         add_action( 'autoptimize_setup_done', array( $this, 'maybe_run_partners_tab' ) );
+        add_action( 'autoptimize_setup_done', array( $this, 'run_github_updater' ) );
 
         add_action( 'init', array( $this, 'load_textdomain' ) );
 
@@ -186,6 +187,28 @@ class autoptimizeMain
         }
     }
 
+    public function maybe_run_partners_tab()
+    {
+        // Do github update dance if in is_admin and not admin-ajax.php
+        if ( autoptimizeConfig::is_admin_and_not_ajax() ) {
+            include AUTOPTIMIZE_PLUGIN_DIR . 'classes/external/php/wp_github_updater.php';
+            $config = array(
+                'slug' => plugin_basename(__FILE__), // this is the slug of your plugin
+                'proper_folder_name' => 'autoptimize-beta', // this is the name of the folder your plugin lives in
+                'api_url' => 'https://api.github.com/repos/futtta/autoptimize', // the GitHub API url of your GitHub repo
+                'raw_url' => 'https://raw.github.com/futtta/autoptimize/beta-updater', // the GitHub raw url of your GitHub repo
+                'github_url' => 'https://github.com/futtta/autoptimize', // the GitHub url of your GitHub repo
+                'zip_url' => 'https://github.com/futtta/autoptimize/zipball/beta-updater', // the zip url of the GitHub repo
+                'sslverify' => true, // whether WP should check the validity of the SSL cert when getting an update
+                'requires' => '4.0', // which version of WordPress does your plugin require?
+                'tested' => '4.9', // which version of WordPress is your plugin tested up to?
+                'readme' => 'README.md', // which file to use as the readme for the version number
+                'access_token' => '', // Access private repositories by authorizing under Appearance > GitHub Updates when this example plugin is installed
+            );
+            new WP_GitHub_Updater($config);
+        }
+    }
+    
     /**
      * Setup output buffering if needed.
      *
