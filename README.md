@@ -1,7 +1,7 @@
 Autoptimize
 ===========
 
-`~Current Version:2.4.1~`
+`~Current Version:2.4.0-beta2~`
 
 The [official Autoptimize repo on Github can be found here](https://github.com/futtta/autoptimize/).
 
